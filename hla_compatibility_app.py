@@ -45,7 +45,7 @@ fecha = datetime.date.today().strftime("%Y-%m-%d")
 id_informe = f"TPH-{datetime.date.today().strftime('%Y%m%d')}-{random.randint(1000,9999)}"
 
 # --- DATOS DE COMPATIBILIDAD HLA ---
-st.header(T("Incompatibilidad HLA", "HLA matching"))
+st.header(T("Compatibilidad HLA", "HLA Compatibility"))
 dis_a = st.checkbox("HLA-A")
 dis_b = st.checkbox("HLA-B")
 dis_c = st.checkbox("HLA-C")
@@ -56,48 +56,51 @@ lider_tt = st.checkbox("Polimorfismo líder HLA-B T/T")
 
 # --- DATOS DEL DONANTE ---
 st.header(T("Datos del Donante", "Donor Information"))
-edad_don = st.number_input(T("Edad del donante", "Donor age"), 8, 80, 30)
+edad_don = st.number_input(T("Edad del donante", "Donor age"), 0, 75, 30)
 grupo_don = st.selectbox("Grupo sanguíneo donante", ["A", "B", "AB", "O"])
 sexo_don = st.selectbox(T("Sexo del donante", "Donor sex"), ["Masculino", "Femenino"])
 grupo_rec = st.selectbox("Grupo sanguíneo receptor", ["A", "B", "AB", "O"])
 hijos_don = st.checkbox(T("Donante con hijos", "Donor has children"))
 
-# --- EVALUACIÓN DE RIESGO ---
-st.subheader(T("Resultado Inmunogenético", "Immunogenetic Result"))
-n_dis = sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1])
+# --- NIVELES DE ANTI-HLA (DSA) ---
+dsa_valor = st.number_input(T("Nivel de anticuerpos anti-HLA (DSA, MFI)", "Anti-HLA antibodies level (DSA, MFI)"), min_value=0, value=0)
+
+# --- RIESGO DE GVHD, RECAÍDA, PRENDIMIENTO ---
+st.subheader(T("Evaluación de Riesgos Adicionales", "Additional Risk Evaluation"))
 riesgo = "Bajo"
-if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or n_dis >= 2:
+if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) >= 2:
     riesgo = "Alto"
-elif n_dis == 1:
+elif sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) == 1:
     riesgo = "Intermedio"
+riesgo_gvhd = riesgo
+riesgo_recaida = "Bajo" if riesgo == "Bajo" else ("Intermedio" if edad_don < 40 else "Alto")
+riesgo_prend = "Bajo"  # Riesgo de fallo de prendimiento (graft failure)
+if grupo_don != grupo_rec:
+    riesgo_prend = "Intermedio"
+if grupo_don != grupo_rec and edad_don > 45:
+    riesgo_prend = "Alto"
+riesgo_dsa = "Negativo"
+if dsa_valor > 2000:
+    riesgo_dsa = "Positivo (>2000 MFI)"
 
-color = {"Bajo": "🟢", "Intermedio": "🟠", "Alto": "🔴"}[riesgo]
-st.info(f"{color} {T('Riesgo', 'Risk')}: **{riesgo}**")
+st.markdown(f"""
+🔬 **{T('Riesgo de GVHD', 'GVHD Risk')}:** {riesgo_gvhd}  
+🧬 **{T('Riesgo de recaída', 'Relapse Risk')}:** {riesgo_recaida}  
+🩸 **{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}:** {riesgo_prend}  
+🧪 **{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
+""")
 
-# --- PRIORIDAD DEL DONANTE ---
-st.subheader(T("Prioridad del Donante", "Donor Priority"))
-prioridad = 1
-if sexo_don == "Femenino" or edad_don > 45 or hijos_don or riesgo == "Alto":
-    prioridad = 2
-if n_dis >= 2 or lider_tt or dpb1_no_perm or (sexo_don == "Femenino" and hijos_don):
-    prioridad = 3
+# --- AGREGAR A PDF ---
+if 'pdf_info' not in st.session_state:
+    st.session_state['pdf_info'] = {}
+st.session_state['pdf_info'].update({
+    "riesgo_gvhd": riesgo_gvhd,
+    "riesgo_recaida": riesgo_recaida,
+    "riesgo_prend": riesgo_prend,
+    "riesgo_dsa": riesgo_dsa
+})
 
-msg = {
-    1: T("Donante ideal. Varón joven sin disonancias críticas.", "Ideal donor. Young male, no critical mismatches."),
-    2: T("Donante aceptable. Presenta factores moderados de riesgo.", "Acceptable donor. Some moderate-risk factors."),
-    3: T("Donante de baja prioridad. Buscar alternativas si es posible.", "Low priority donor. Consider alternatives.")
-}[prioridad]
-
-st.success(f"🧬 {T('Prioridad', 'Priority')} {prioridad} — {msg}")
-
-# --- GUARDAR REGISTRO LOCAL ---
-if not os.path.exists("registros.csv"):
-    with open("registros.csv", "w") as f:
-        f.write("codigo,fecha,id_informe,riesgo,prioridad\n")
-with open("registros.csv", "a") as f:
-    f.write(f"{codigo},{fecha},{id_informe},{riesgo},{prioridad}\n")
-
-# --- GENERAR PDF ---
+# --- GENERAR PDF CON RIESGOS COMPLETOS ---
 if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
     pdf = FPDF()
     pdf.add_page()
@@ -109,11 +112,12 @@ if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
 {T('Fecha', 'Date')}: {fecha}
 {T('ID del informe', 'Report ID')}: {id_informe}
 
-{T('Riesgo inmunogenético', 'Immunogenetic Risk')}: {riesgo}
-{T('Prioridad del donante', 'Donor Priority')}: {prioridad}
-{T('Comentario', 'Comment')}: {msg}
+{T('Riesgo de GVHD', 'GVHD Risk')}: {riesgo_gvhd}
+{T('Riesgo de recaída', 'Relapse Risk')}: {riesgo_recaida}
+{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}: {riesgo_prend}
+{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
 """)
-    path = "/tmp/reporte.pdf"
+    path = "/tmp/informe_hla.pdf"
     pdf.output(path)
     with open(path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode()
