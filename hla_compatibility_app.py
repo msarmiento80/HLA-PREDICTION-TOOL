@@ -7,7 +7,7 @@ import os
 import random
 
 st.set_page_config(page_title="HLA Evaluator", layout="centered")
-
+st.set_page_config(page_title="HLA Evaluator", page_icon="favicon.png", layout="centered")
 # Estilo
 st.markdown(
     """
