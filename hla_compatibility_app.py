@@ -68,7 +68,7 @@ dsa_valor = st.number_input(T("Nivel de anticuerpos anti-HLA (DSA, MFI)", "Anti-
 # --- RIESGO DE GVHD, RECAÍDA, PRENDIMIENTO ---
 st.subheader(T("Evaluación de Riesgos Adicionales", "Additional Risk Evaluation"))
 riesgo = "Bajo"
-if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1])  # número de incompatibilidades HLA >= 2:
+if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) >= 2:
     riesgo = "Alto"
 elif sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) == 1:
     riesgo = "Intermedio"
