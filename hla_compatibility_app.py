@@ -45,7 +45,7 @@ fecha = datetime.date.today().strftime("%Y-%m-%d")
 id_informe = f"TPH-{datetime.date.today().strftime('%Y%m%d')}-{random.randint(1000,9999)}"
 
 # --- DATOS DE COMPATIBILIDAD HLA ---
-st.header(T("Incmpatibilidad HLA", "HLA Mismatching"))
+st.header(T("Incompatibilidad HLA", "HLA Mismatching"))
 dis_a = st.checkbox("HLA-A")
 dis_b = st.checkbox("HLA-B")
 dis_c = st.checkbox("HLA-C")
