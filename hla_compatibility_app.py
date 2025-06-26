@@ -45,7 +45,7 @@ fecha = datetime.date.today().strftime("%Y-%m-%d")
 id_informe = f"TPH-{datetime.date.today().strftime('%Y%m%d')}-{random.randint(1000,9999)}"
 
 # --- DATOS DE COMPATIBILIDAD HLA ---
-st.header(T("Incompatibilidad HLA", "HLA mismatching"))
+st.header(T("Compatibilidad HLA", "HLA Compatibility"))
 dis_a = st.checkbox("HLA-A")
 dis_b = st.checkbox("HLA-B")
 dis_c = st.checkbox("HLA-C")
@@ -100,7 +100,11 @@ st.markdown(f"""
 prioridad = ""
 icono = ""
 color = ""
-if riesgo == "Bajo" and edad_don <= 35 and not lider_tt and dsa_valor <= 2000 and grupo_don == grupo_rec and sexo_don == "Masculino":
+if dsa_valor > 5000:
+    prioridad = T("Prioridad 3: Donante subóptimo", "Priority 3: Suboptimal donor")
+    icono = "❌"
+    color = "#f8d7da"
+elif riesgo == "Bajo" and edad_don <= 35 and not lider_tt and grupo_don == grupo_rec and sexo_don == "Masculino":
     prioridad = T("Prioridad 1: Donante ideal", "Priority 1: Optimal donor")
     icono = "✅"
     color = "#d0f0c0"
@@ -113,17 +117,22 @@ else:
     icono = "❌"
     color = "#f8d7da"
 
-st.subheader(T("Prioridad del Donante", "Donor Priority"))
+st.subheader(T(" Prioridad del Donante", " Donor Priority"))
 st.markdown(f"""
 <div style='padding: 1rem; background-color:{color}; border-radius: 10px;'>
 <b>{icono} {prioridad}</b>
 </div>
 """, unsafe_allow_html=True)
 
+# --- ALERTA POR DSA ELEVADO ---
+if dsa_valor > 5000:
+    st.error(T("⚠️ Atención: Anticuerpos anti-HLA muy elevados (>5000 MFI). Evaluar desensibilización pre-trasplante.",
+                 "⚠️ Warning: Highly elevated anti-HLA antibodies (>5000 MFI). Consider pre-transplant desensitization."))
+
 # --- RECOMENDACIÓN CLÍNICA ---
 recomendacion = ""
 if riesgo_prend == "Alto" and dsa_valor > 5000:
-    recomendacion = T("Se recomienda evitar este donante debido al alto riesgo de fallo de prendimiento asociado a anticuerpos anti-HLA elevados (>5000 MFI).", "Avoid this donor due to high graft failure risk associated with elevated anti-HLA antibodies (>5000 MFI).")
+    recomendacion = T("Se recomienda evitar este donante debido al alto riesgo de fallo de prendimiento asociado a anticuerpos anti-HLA elevados (>5000 MFI). Si se considera imprescindible, debe evaluarse desensibilización pre-trasplante.", "Avoid this donor due to high graft failure risk associated with elevated anti-HLA antibodies (>5000 MFI). If this donor must be used, consider pre-transplant desensitization strategies.")
 elif riesgo == "Alto":
     recomendacion = T("Buscar alternativas si es posible; alto riesgo por incompatibilidades HLA.", "Seek alternatives if possible; high risk due to HLA incompatibilities.")
 elif riesgo == "Intermedio":
