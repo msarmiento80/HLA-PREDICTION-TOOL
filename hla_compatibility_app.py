@@ -68,13 +68,19 @@ dsa_valor = st.number_input(T("Nivel de anticuerpos anti-HLA (DSA, MFI)", "Anti-
 # --- RIESGO DE GVHD, RECAÍDA, PRENDIMIENTO ---
 st.subheader(T("Evaluación de Riesgos Adicionales", "Additional Risk Evaluation"))
 riesgo = "Bajo"
-if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) >= 2:
+if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1])  # número de incompatibilidades HLA >= 2:
     riesgo = "Alto"
 elif sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) == 1:
     riesgo = "Intermedio"
 riesgo_gvhd = riesgo
 riesgo_recaida = "Bajo" if riesgo == "Bajo" else ("Intermedio" if edad_don < 40 else "Alto")
 riesgo_prend = "Bajo"  # Riesgo de fallo de prendimiento (graft failure)
+if dsa_valor > 5000:
+    riesgo_prend = "Alto"
+elif grupo_don != grupo_rec:
+    riesgo_prend = "Intermedio"
+elif grupo_don != grupo_rec and edad_don > 45:
+    riesgo_prend = "Alto"
 if grupo_don != grupo_rec:
     riesgo_prend = "Intermedio"
 if grupo_don != grupo_rec and edad_don > 45:
@@ -89,6 +95,44 @@ st.markdown(f"""
 🩸 **{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}:** {riesgo_prend}  
 🧪 **{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
 """)
+
+# --- PRIORIZACIÓN DEL DONANTE ---
+prioridad = ""
+icono = ""
+color = ""
+if riesgo == "Bajo" and edad_don <= 35 and not lider_tt and dsa_valor <= 2000 and grupo_don == grupo_rec and sexo_don == "Masculino":
+    prioridad = T("Prioridad 1: Donante ideal", "Priority 1: Optimal donor")
+    icono = "✅"
+    color = "#d0f0c0"
+elif riesgo == "Intermedio" or edad_don <= 50:
+    prioridad = T("Prioridad 2: Donante aceptable", "Priority 2: Acceptable donor")
+    icono = "🟡"
+    color = "#fff3cd"
+else:
+    prioridad = T("Prioridad 3: Donante subóptimo", "Priority 3: Suboptimal donor")
+    icono = "❌"
+    color = "#f8d7da"
+
+st.subheader(T("🎯 Prioridad del Donante", "🎯 Donor Priority"))
+st.markdown(f"""
+<div style='padding: 1rem; background-color:{color}; border-radius: 10px;'>
+<b>{icono} {prioridad}</b>
+</div>
+""", unsafe_allow_html=True)
+
+# --- RECOMENDACIÓN CLÍNICA ---
+recomendacion = ""
+if riesgo_prend == "Alto" and dsa_valor > 5000:
+    recomendacion = T("Se recomienda evitar este donante debido al alto riesgo de fallo de prendimiento asociado a anticuerpos anti-HLA elevados (>5000 MFI).", "Avoid this donor due to high graft failure risk associated with elevated anti-HLA antibodies (>5000 MFI).")
+elif riesgo == "Alto":
+    recomendacion = T("Buscar alternativas si es posible; alto riesgo por incompatibilidades HLA.", "Seek alternatives if possible; high risk due to HLA incompatibilities.")
+elif riesgo == "Intermedio":
+    recomendacion = T("Evaluar en comité; riesgo intermedio.", "Evaluate in committee; intermediate risk.")
+else:
+    recomendacion = T("Proceder si no existen otras contraindicaciones.", "Proceed if no other contraindications exist.")
+
+st.subheader(T("🩺 Recomendación Clínica", "🩺 Clinical Recommendation"))
+st.info(recomendacion)
 
 # --- AGREGAR A PDF ---
 if 'pdf_info' not in st.session_state:
@@ -116,6 +160,10 @@ if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
 {T('Riesgo de recaída', 'Relapse Risk')}: {riesgo_recaida}
 {T('Riesgo de fallo de prendimiento', 'Graft failure risk')}: {riesgo_prend}
 {T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
+
+{T('Prioridad del Donante', 'Donor Priority')}: " +
+                     "{prioridad}
+{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}
 """)
     path = "/tmp/informe_hla.pdf"
     pdf.output(path)
