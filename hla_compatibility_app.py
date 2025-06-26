@@ -17,7 +17,7 @@ def set_custom_style():
             text-align: center;
         }
         h2, h3 {
-            color: #004080;
+            color: #004000;
         }
         .stAlert {
             background-color: #f0f8ff;
@@ -94,13 +94,13 @@ st.markdown(f"**Riesgo Inmunogenético:** :{color}[{riesgo}]")
 st.info(recomendacion)
 
 st.subheader("Visualización del Riesgo")
-fig, ax = plt.subplots(figsize=(0.5, 1.5))
+fig, ax = plt.subplots(figsize=(0.5, 1.0))
 colors = ["green", "yellow", "orange", "red"]
 labels = ["Bajo", "Intermedio", "Moderado-Alto", "Alto"]
 pos = labels.index("Alto" if riesgo == "Alto" else "Moderado-Alto" if riesgo == "Intermedio" else "Bajo")
 for i, c in enumerate(colors):
     ax.bar(0, 1, bottom=i, color=c)
-ax.plot([0], [pos + 0.5], marker="o", markersize=8, color="black")
+ax.plot([0], [pos + 0.5], marker="o", markersize=5, color="black")
 ax.axis("off")
 st.pyplot(fig)
 
