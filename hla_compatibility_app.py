@@ -38,7 +38,7 @@ fecha = datetime.date.today().strftime("%Y-%m-%d")
 id_informe = f"PTA-{datetime.date.today().strftime('%Y%m%d')}-{random.randint(1000,9999)}"
 
 # Compatibilidad
-st.header(TXT("Compatibilidad HLA", "HLA Compatibility"))
+st.header(TXT("Incompatibilidad HLA", "HLA mismatch"))
 col1, col2 = st.columns(2)
 with col1:
     dis_a = st.checkbox("HLA-A")
@@ -88,7 +88,7 @@ msg = {
     3: TXT("Donante de baja prioridad. Buscar alternativas si es posible.", "Low priority donor. Consider alternatives.")
 }[prioridad]
 
-st.success(f"🧬 {TXT('Prioridad', 'Priority')} {prioridad} — {msg}")
+st.success(f" {TXT('Prioridad', 'Priority')} {prioridad} — {msg}")
 
 # Guardar registro local
 if not os.path.exists("registros.csv"):
