@@ -54,7 +54,7 @@ with col2:
 st.header(TXT("Datos del Donante", "Donor Information"))
 col3, col4 = st.columns(2)
 with col3:
-    edad_don = st.number_input(TXT("Edad del donante", "Donor age"), 08, 70, 30)
+    edad_don = st.number_input(TXT("Edad del donante", "Donor age"), 8, 70, 30)
     grupo_don = st.selectbox("Grupo sanguíneo donante", ["A", "B", "AB", "O"])
     sexo_don = st.selectbox(TXT("Sexo del donante", "Donor sex"), ["Masculino", "Femenino"])
 with col4:
