@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 st.set_page_config(page_title="Evaluador HLA para HSCT", layout="centered")
-st.title("\U0001F9EC Evaluador de Compatibilidad HLA para Trasplante Alogénico")
+st.title("🧬 Evaluador de Compatibilidad HLA para Trasplante Alogénico")
 
 st.header("1. Ingreso de Datos del Donante")
 
 # Opción de carga desde archivo
-st.subheader("\U0001F4C2 Cargar tipificación desde archivo (opcional)")
+st.subheader("📂 Cargar tipificación desde archivo (opcional)")
 archivo = st.file_uploader("Subir archivo CSV con columnas: Locus, Estado (Igual/Diferente)", type="csv")
 
 loci_discrepantes = []
@@ -32,7 +32,7 @@ with col2:
     lider_hlab = st.radio("Polimorfismo del líder HLA-B", ["M/M", "M/T", "T/T", "Desconocido"])
 
 # Factores adicionales
-st.subheader("\U0001FA7A Factores clínicos adicionales")
+st.subheader("🩺 Factores clínicos adicionales")
 enfermedad = st.selectbox("Tipo de enfermedad", ["Leucemia aguda", "Mielodisplasia", "Linfoma", "Otra"])
 fuente_injerto = st.selectbox("Fuente del injerto", ["Médula ósea", "Sangre periférica", "Cordón umbilical"])
 
@@ -125,8 +125,3 @@ with st.expander("Referencias clínicas"):
     - Zhao X-Y et al., *J Hematol Oncol*, 2020.
     - Fuchs EJ, Luznik L. *ASH Educ Program*, 2021.
     """)
-
-# Exportar resultado
-st.header("4. Exportar Evaluación")
-if st.button("Descargar informe PDF (próximamente)"):
-    st.warning("Funcionalidad en desarrollo. En versiones futuras podrás generar un informe clínico en PDF.")
