@@ -90,10 +90,10 @@ if dsa_valor > 2000:
     riesgo_dsa = "Positivo (>2000 MFI)"
 
 st.markdown(f"""
-🔬 **{T('Riesgo de GVHD', 'GVHD Risk')}:** {riesgo_gvhd}  
-🧬 **{T('Riesgo de recaída', 'Relapse Risk')}:** {riesgo_recaida}  
-🩸 **{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}:** {riesgo_prend}  
-🧪 **{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
+**{T('Riesgo de GVHD', 'GVHD Risk')}:** {riesgo_gvhd}  
+**{T('Riesgo de recaída', 'Relapse Risk')}:** {riesgo_recaida}  
+**{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}:** {riesgo_prend}  
+**{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
 """)
 
 # --- PRIORIZACIÓN DEL DONANTE ---
@@ -113,7 +113,7 @@ else:
     icono = "❌"
     color = "#f8d7da"
 
-st.subheader(T("🎯 Prioridad del Donante", "🎯 Donor Priority"))
+st.subheader(T("Prioridad del Donante", "Donor Priority"))
 st.markdown(f"""
 <div style='padding: 1rem; background-color:{color}; border-radius: 10px;'>
 <b>{icono} {prioridad}</b>
