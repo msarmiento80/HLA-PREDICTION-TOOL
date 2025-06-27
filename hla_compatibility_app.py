@@ -134,108 +134,47 @@ else:
 st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
 st.info(recomendacion)
 
-# --- TABLA DE FACTORES ---
+# --- TABLA DE FACTORES INMUNOGENÉTICOS ---
+st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
 data = {
-    "Ranking": ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
-    "Factor": [
-        "HLA-DRB1 mismatch",
-        "HLA-A or HLA-B mismatch",
-        "Non-permissive HLA-DPB1",
-        "HLA-C mismatch",
-        "HLA-DQB1 mismatch",
-        "HLA-B leader (M/T)",
-        "HLA-DQA1 mismatch",
-        "KIR ligand mismatch",
-        "Allelic vs Antigen mismatch",
-        "Mismatch directionality"
+    "Ranking": [
+        "1️⃣",
+        "2️⃣",
+        "3️⃣",
+        "4️⃣",
+        "5️⃣",
+        "6️⃣",
+        "7️⃣",
+        "8️⃣",
+        "9️⃣",
+        "🔟"
     ],
-    "Impact": [
+    "Impacto clínico": [
         "↑ Acute GVHD, ↓ OS, ↑ TRM",
         "↑ GVHD, graft failure, ↓ survival",
         "↑ GVHD, ↑ TRM",
         "↑ chronic GVHD, moderate TRM",
         "Limited effect alone; augments DRB1",
-        "↑ relapse if mismatch (M donor)",
+        "↑ relapse if mismatch (T/T donor)",
         "Emerging evidence; CD4 repertoire",
         "↓ relapse, NK alloreactivity (AML)",
         "Allele mismatch worse than antigen",
         "GVHD (GVH), graft loss (HVG)"
     ],
-    "N° Pacientes": [12000, 18000, 5000, 4000, 3500, 3000, 1500, 2200, 6000, 2500],
-    "Fuerza Evidencia": [
-        "Muy Alta",
-        "Muy Alta",
-        "Alta",
-        "Alta",
-        "Moderada",
-        "Moderada",
-        "Limitada",
-        "Moderada",
-        "Alta",
-        "Moderada"
-    ],
+    "N° Pacientes": ["12000", "18000", "5000", "4000", "6000", "7000", "3000", "3500", "10000", "4000"],
+    "Fuerza Evidencia": ["Muy Alta", "Muy Alta", "Alta", "Alta", "Media", "Media", "Baja", "Media", "Alta", "Media"],
     "Referencia": [
-        "Lee et al., 2007",
-        "Morishima et al., 2015",
-        "Fleischhauer et al., 2012",
-        "Petersdorf et al., 2001",
-        "Kawase et al., 2007",
-        "Pidala et al., 2020",
-        "Madbouly et al., 2016",
-        "Ruggeri et al., 2002",
-        "Petersdorf et al., 2001",
-        "Dehn et al., 2014"
+        "Lee SJ et al. (2007)",
+        "Morishima Y et al. (2015)",
+        "Fleischhauer K et al. (2012)",
+        "Petersdorf EW et al. (2001)",
+        "Kawase T et al. (2007)",
+        "Pidala J et al. (2020)",
+        "Madbouly AS et al. (2016)",
+        "Ruggeri L et al. (2002)",
+        "Petersdorf EW et al. (2001)",
+        "Dehn J et al. (2014)"
     ]
 }
 df_tabla = pd.DataFrame(data)
-st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
-st.dataframe(df_tabla, use_container_width=True)
-
-# --- GUARDAR TABLA COMO IMAGEN PARA PDF ---
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.axis('off')
-tabla = ax.table(cellText=df_tabla.values,
-                 colLabels=df_tabla.columns,
-                 loc='center', cellLoc='center')
-tabla.auto_set_font_size(False)
-tabla.set_fontsize(8)
-tabla.scale(1, 1.5)
-img_path = f"/tmp/tabla_factores_{codigo}_{fecha}.png"
-plt.savefig(img_path, bbox_inches='tight')
-plt.close()
-
-# --- GENERAR PDF ---
-if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(200, 10, T("Informe de Evaluación HLA", "HLA Evaluation Report"), ln=True, align='C')
-    pdf.set_font("Arial", '', 12)
-    pdf.ln(10)
-    pdf.multi_cell(0, 10, f"""{T('Código del paciente', 'Patient code')}: {codigo}
-{T('Fecha', 'Date')}: {fecha}
-{T('ID del informe', 'Report ID')}: {id_informe}
-
-{T('Riesgo de GVHD', 'GVHD Risk')}: {riesgo_gvhd}
-{T('Riesgo de recaída', 'Relapse Risk')}: {riesgo_recaida}
-{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}: {riesgo_prend}
-{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
-
-{T('Prioridad del Donante', 'Donor Priority')}: {prioridad}
-{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}""")
-
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, T("Factores Inmunogenéticos Relevantes", "Relevant Immunogenetic Factors"), ln=True, align='C')
-    pdf.image(img_path, x=10, w=190)
-    pdf.ln(5)
-    pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(0, 8, T("Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica.",
-                          "This table summarizes the immunogenetic impact of HLA mismatches based on scientific literature."))
-
-    path = f"/tmp/informe_hla_{codigo}_{fecha}.pdf"
-    pdf.output(path)
-    with open(path, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode()
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="informe_hla_{codigo}_{fecha}.pdf">📥 {T("Descargar PDF", "Download PDF")}</a>'
-        st.markdown(href, unsafe_allow_html=True)
+st.dataframe(df_tabla.set_index("Ranking"), use_container_width=True)
