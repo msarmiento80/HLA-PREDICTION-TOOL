@@ -105,7 +105,6 @@ st.markdown(f"""
 **{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
 """)
 
-
 # --- PRIORIZACIÓN DEL DONANTE ---
 prioridad = ""
 if dsa_valor > 5000:
@@ -135,95 +134,111 @@ else:
 st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
 st.info(recomendacion)
 
-# --- GUÍA DE DECISIÓN Y MATRIZ HLA ---
-st.subheader(T("\U0001F9E9 Guía de Selección HLA", "\U0001F9E9 HLA Matching Guide"))
+st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
+st.info(recomendacion)
 
-st.markdown(T("""
-**Flujograma Simplificado para Selección de Donante:**
-
-- ✅ **10/10 Match (HLA-A, -B, -C, -DRB1, -DQB1)**  
-  → Opción preferida. Menor riesgo de GVHD y mejor sobrevida.
-
-- ⚠️ **9/10 Match (una incompatibilidad, evitar DRB1 o B)**  
-  → Aceptable si no hay 10/10. Riesgo intermedio de GVHD.
-
-- ❌ **8/10 o peor**  
-  → Solo en ausencia de otras alternativas. Riesgo elevado.
-
-**¿Incompatibilidad en HLA-DPB1?**  
-- *Permisiva:* considerar con precaución.  
-- *No permisiva:* evitar por mayor riesgo de GVHD.
-
-**Polimorfismo líder HLA-B (M/T):**  
-- Preferir combinaciones M/M o M/T.  
-- Evitar T/T si es posible (↑ GVHD, recaída).
-
-**Tipificación de alta resolución:**  
-- Imprescindible para evaluar alelo vs antígeno.
-""",
-"""
-**Simplified Flowchart for Donor Selection:**
-
-- ✅ **10/10 Match (HLA-A, -B, -C, -DRB1, -DQB1)**  
-  → Preferred. Lowest GVHD risk, best survival.
-
-- ⚠️ **9/10 Match (one mismatch, avoid DRB1 or B)**  
-  → Acceptable if no 10/10. Moderate risk.
-
-- ❌ **8/10 or worse**  
-  → Last resort. High GVHD and TRM risk.
-
-**HLA-DPB1 Mismatch?**  
-- *Permissive:* may proceed cautiously.  
-- *Non-permissive:* avoid if possible.
-
-**HLA-B Leader Polymorphism (M/T):**  
-- Prefer M/M or M/T.  
-- Avoid T/T combinations.
-
-**Use allele-level high-resolution typing.**
-"""))
-
-st.subheader(T("\U0001F4CB Matriz de Decisión HLA", "\U0001F4CB HLA Decision Matrix"))
-
-matrix_data = {
-    T("Nivel de Compatibilidad", "Match Level"): [
-        "10/10 Match", "9/10 Match", "8/10 or worse",
-        "DPB1 Permisiva", "DPB1 No permisiva",
-        "Incompatibilidad en DRB1 o B", "Incompatibilidad en C o A", "Solo DQB1"
+# --- TABLA DE FACTORES ---
+data = {
+    "Ranking": ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
+    "Factor": [
+        "HLA-DRB1 mismatch",
+        "HLA-A or HLA-B mismatch",
+        "Non-permissive HLA-DPB1",
+        "HLA-C mismatch",
+        "HLA-DQB1 mismatch",
+        "HLA-B leader (M/T)",
+        "HLA-DQA1 mismatch",
+        "KIR ligand mismatch",
+        "Allelic vs Antigen mismatch",
+        "Mismatch directionality"
     ],
-    T("Locus HLA implicado", "HLA Loci"): [
-        "HLA-A, -B, -C, -DRB1, -DQB1", "Una incompatibilidad", "≥2 incompatibilidades",
-        "HLA-DPB1", "HLA-DPB1",
-        "HLA-DRB1, -B", "HLA-C, -A", "HLA-DQB1"
+    "Impact": [
+        "↑ Acute GVHD, ↓ OS, ↑ TRM",
+        "↑ GVHD, graft failure, ↓ survival",
+        "↑ GVHD, ↑ TRM",
+        "↑ chronic GVHD, moderate TRM",
+        "Limited effect alone; augments DRB1",
+        "↑ relapse if mismatch (M donor)",
+        "Emerging evidence; CD4 repertoire",
+        "↓ relapse, NK alloreactivity (AML)",
+        "Allele mismatch worse than antigen",
+        "GVHD (GVH), graft loss (HVG)"
     ],
-    T("Recomendación clínica", "Clinical Recommendation"): [
-        "Opción preferida", "Aceptable si no hay 10/10", "Último recurso",
-        "Puede aceptarse", "Evitar si es posible",
-        "Evitar fuertemente", "Evitar si se puede", "Considerar"
+    "N° Pacientes": [12000, 18000, 5000, 4000, 3500, 3000, 1500, 2200, 6000, 2500],
+    "Fuerza Evidencia": [
+        "Muy Alta",
+        "Muy Alta",
+        "Alta",
+        "Alta",
+        "Moderada",
+        "Moderada",
+        "Limitada",
+        "Moderada",
+        "Alta",
+        "Moderada"
     ],
-    T("Riesgo asociado", "Risk Profile"): [
-        "Menor GVHD, mejor OS", "GVHD moderado", "↑ GVHD, ↑ mortalidad",
-        "Similar a full match", "↑ GVHD, ↓ OS",
-        "Riesgo inmunogénico alto", "Impacto intermedio", "Menos crítico"
+    "Referencia": [
+        "Lee et al., 2007",
+        "Morishima et al., 2015",
+        "Fleischhauer et al., 2012",
+        "Petersdorf et al., 2001",
+        "Kawase et al., 2007",
+        "Pidala et al., 2020",
+        "Madbouly et al., 2016",
+        "Ruggeri et al., 2002",
+        "Petersdorf et al., 2001",
+        "Dehn et al., 2014"
     ]
 }
-df_matrix = pd.DataFrame(matrix_data)
-st.dataframe(df_matrix, use_container_width=True)
+df_tabla = pd.DataFrame(data)
+st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
+st.dataframe(df_tabla, use_container_width=True)
 
-st.markdown(T("""
-**Referencias clave:**
-- Lee SJ et al., *Blood*. 2007.
-- Morishima Y et al., *Blood*. 2015.
-- Fleischhauer K et al., *Blood*. 2012.
-- Petersdorf EW et al., *Blood*. 2001.
-- Pidala J et al., *J Clin Oncol*. 2020.
-""",
-"""
-**Key References:**
-- Lee SJ et al., *Blood*. 2007.
-- Morishima Y et al., *Blood*. 2015.
-- Fleischhauer K et al., *Blood*. 2012.
-- Petersdorf EW et al., *Blood*. 2001.
-- Pidala J et al., *J Clin Oncol*. 2020.
-"""))
+# --- GUARDAR TABLA COMO IMAGEN PARA PDF ---
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.axis('off')
+tabla = ax.table(cellText=df_tabla.values,
+                 colLabels=df_tabla.columns,
+                 loc='center', cellLoc='center')
+tabla.auto_set_font_size(False)
+tabla.set_fontsize(8)
+tabla.scale(1, 1.5)
+img_path = f"/tmp/tabla_factores_{codigo}_{fecha}.png"
+plt.savefig(img_path, bbox_inches='tight')
+plt.close()
+
+# --- GENERAR PDF ---
+if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(200, 10, T("Informe de Evaluación HLA", "HLA Evaluation Report"), ln=True, align='C')
+    pdf.set_font("Arial", '', 12)
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, f"""{T('Código del paciente', 'Patient code')}: {codigo}
+{T('Fecha', 'Date')}: {fecha}
+{T('ID del informe', 'Report ID')}: {id_informe}
+
+{T('Riesgo de GVHD', 'GVHD Risk')}: {riesgo_gvhd}
+{T('Riesgo de recaída', 'Relapse Risk')}: {riesgo_recaida}
+{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}: {riesgo_prend}
+{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
+
+{T('Prioridad del Donante', 'Donor Priority')}: {prioridad}
+{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}""")
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, T("Factores Inmunogenéticos Relevantes", "Relevant Immunogenetic Factors"), ln=True, align='C')
+    pdf.image(img_path, x=10, w=190)
+    pdf.ln(5)
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(0, 8, T("Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica.",
+                          "This table summarizes the immunogenetic impact of HLA mismatches based on scientific literature."))
+
+    path = f"/tmp/informe_hla_{codigo}_{fecha}.pdf"
+    pdf.output(path)
+    with open(path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="informe_hla_{codigo}_{fecha}.pdf">📥 {T("Descargar PDF", "Download PDF")}</a>'
+        st.markdown(href, unsafe_allow_html=True)
