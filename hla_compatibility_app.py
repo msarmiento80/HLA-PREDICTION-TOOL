@@ -281,7 +281,7 @@ data = {
 df_tabla = pd.DataFrame(data)
 st.dataframe(df_tabla, use_container_width=True)
 
-st.markdown(T("""
+st.markdown(T("""))
 **Referencias:**
 - Lee SJ et al. *Blood*. 2007;110(13):4576-83.  
 - Morishima Y et al. *Blood*. 2015;125(7):1189-97.  
