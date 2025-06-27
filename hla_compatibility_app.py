@@ -45,11 +45,13 @@ st.markdown(
 idioma = st.selectbox("\U0001F310 Idioma / Language", ["Español", "English"])
 T = lambda es, en: es if idioma == "Español" else en
 
+# Mostrar logo
+st.image("logo_uthc.png", width=200)
+
+
 # --- TÍTULOS PRINCIPALES ---
 st.title(T("Evaluador de Compatibilidad HLA", "HLA Compatibility Evaluator"))
 
-# Mostrar logo
-st.image("logo_uthc.png", width=200)
 
 st.markdown(f"<h4>{T('Programa de Trasplante Hematopoyético del Adulto - Pontificia Universidad Católica de Chile', 'Adult Hematopoietic Transplant Program - Pontifical Catholic University of Chile')}</h4>", unsafe_allow_html=True)
 
