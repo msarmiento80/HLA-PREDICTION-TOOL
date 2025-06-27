@@ -194,12 +194,7 @@ if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
     pdf.ln(3)
     pdf.set_font("Arial", 'I', 10)
     pdf.multi_cell(0, 8, T("Interpretación sugerida: Los factores ubicados en los primeros lugares del ranking deben recibir mayor peso en la decisión clínica de selección de donantes. La incompatibilidad en DRB1 y B representa un riesgo inmunogenético crítico, mientras que otros como DQB1 o el líder HLA-B pueden ser tolerables en contextos clínicos adecuados.", "Suggested interpretation: Higher-ranked factors should be given more weight in clinical donor selection. DRB1 and B mismatches represent critical immunogenetic risks, while others like DQB1 or HLA-B leader mismatches may be tolerable depending on clinical context."))
-pdf.ln(5)
-pdf.set_font("Arial", '', 10)
-pdf.multi_cell(0, 8, T("Nota: Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica actual.", "Note: This table summarizes the immunogenetic impact of HLA mismatches based on current scientific literature."))
-pdf.ln(3)
-pdf.set_font("Arial", 'I', 10)
-pdf.multi_cell(0, 8, T("Interpretación sugerida: Los factores ubicados en los primeros lugares del ranking deben recibir mayor peso en la decisión clínica de selección de donantes. La incompatibilidad en DRB1 y B representa un riesgo inmunogenético crítico, mientras que otros como DQB1 o el líder HLA-B pueden ser tolerables en contextos clínicos adecuados.", "Suggested interpretation: Higher-ranked factors should be given more weight in clinical donor selection. DRB1 and B mismatches represent critical immunogenetic risks, while others like DQB1 or HLA-B leader mismatches may be tolerable depending on clinical context."))
+
 
     path = f"/tmp/informe_hla_{codigo}_{fecha}.pdf"
     pdf.output(path)
@@ -312,3 +307,5 @@ st.markdown(T("""
 - Petersdorf EW et al. *N Engl J Med*. 2001;344(9):620-8.  
 - Dehn J et al. *Biol Blood Marrow Transplant*. 2014;20:S1-136.
 """)
+
+# --- FIN ---
