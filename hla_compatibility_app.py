@@ -105,6 +105,7 @@ st.markdown(f"""
 **{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
 """)
 
+
 # --- PRIORIZACIÓN DEL DONANTE ---
 prioridad = ""
 if dsa_valor > 5000:
