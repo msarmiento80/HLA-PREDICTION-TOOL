@@ -34,25 +34,10 @@ st.markdown(
     .stAlert, .st-info, .stWarning, .st-error {
         color: #000000 !important;
     }
-    .logo-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
-# --- LOGO EN LA INTERFAZ ---
-logo_path = "logo_uthc.png"
-if os.path.exists(logo_path):
-    logo = Image.open(logo_path)
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    st.image(logo, width=200)
-    st.markdown("</div>", unsafe_allow_html=True)
-else:
-    st.warning("⚠️ No se encontró el archivo del logo (logo_uthc.png). Verifica que esté en el directorio.")
 
 # --- SELECTOR DE IDIOMA ---
 idioma = st.selectbox("\U0001F310 Idioma / Language", ["Español", "English"])
@@ -92,6 +77,7 @@ hijos_don = st.checkbox(T("Donante con hijos", "Donor has children"))
 
 # --- NIVELES DE ANTI-HLA (DSA) ---
 dsa_valor = st.number_input(T("Nivel de anticuerpos anti-HLA (DSA, MFI)", "Anti-HLA antibodies level (DSA, MFI)"), min_value=0, value=0)
+
 # --- EVALUACIÓN DE RIESGO ---
 riesgo = "Bajo"
 if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) >= 2:
@@ -148,34 +134,33 @@ else:
 st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
 st.info(recomendacion)
 
-# --- TABLA DE FACTORES ---
+# --- TABLA DE FACTORES INMUNOGENÉTICOS ---
+st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
 data = {
-    "Ranking": ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
-    "Factor": [
-        "HLA-DRB1 mismatch",
-        "HLA-A or HLA-B mismatch",
-        "Non-permissive HLA-DPB1",
-        "HLA-C mismatch",
-        "HLA-DQB1 mismatch",
-        "HLA-B leader (M/T)",
-        "HLA-DQA1 mismatch",
-        "KIR ligand mismatch",
-        "Allelic vs Antigen mismatch",
-        "Mismatch directionality"
+    "Ranking": [
+        "1️⃣",
+        "2️⃣",
+        "3️⃣",
+        "4️⃣",
+        "5️⃣",
+        "6️⃣",
+        "7️⃣",
+        "8️⃣",
+        "9️⃣",
+        "🔟"
     ],
-    "Impact": [
+    "Impacto clínico": [
         "↑ Acute GVHD, ↓ OS, ↑ TRM",
         "↑ GVHD, graft failure, ↓ survival",
         "↑ GVHD, ↑ TRM",
         "↑ chronic GVHD, moderate TRM",
         "Limited effect alone; augments DRB1",
-        "↑ relapse if mismatch (M donor)",
+        "↑ relapse if mismatch (T/T donor)",
         "Emerging evidence; CD4 repertoire",
         "↓ relapse, NK alloreactivity (AML)",
         "Allele mismatch worse than antigen",
         "GVHD (GVH), graft loss (HVG)"
     ],
-
     "N° Pacientes": ["12000", "18000", "5000", "4000", "6000", "7000", "3000", "3500", "10000", "4000"],
     "Fuerza Evidencia": ["Muy Alta", "Muy Alta", "Alta", "Alta", "Media", "Media", "Baja", "Media", "Alta", "Media"],
     "Referencia": [
