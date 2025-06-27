@@ -40,7 +40,7 @@ st.markdown(
 )
 
 # --- LOGO EN LA INTERFAZ ---
-st.image("logo_uthc.png", width=120)
+st.image("logo_uthc.png", width=200)
 
 # --- SELECTOR DE IDIOMA ---
 idioma = st.selectbox("\U0001F310 Idioma / Language", ["Español", "English"])
