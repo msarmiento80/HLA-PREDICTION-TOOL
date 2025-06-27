@@ -163,16 +163,31 @@ data = {
         "↓ relapse, NK alloreactivity (AML)",
         "Allele mismatch worse than antigen",
         "GVHD (GVH), graft loss (HVG)"
+    ],
+    "N° Pacientes": [12000, 18000, 5000, 4000, 3500, 3000, 1500, 2200, 6000, 2500],
+    "Fuerza Evidencia": [
+        "Muy Alta",
+        "Muy Alta",
+        "Alta",
+        "Alta",
+        "Moderada",
+        "Moderada",
+        "Limitada",
+        "Moderada",
+        "Alta",
+        "Moderada"
     ]
 }
 df_tabla = pd.DataFrame(data)
-st.subheader(T("📊 Factores Inmunogenéticos Clave", "📊 Key Immunogenetic Factors"))
+st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
 st.dataframe(df_tabla, use_container_width=True)
 
-# --- GUARDAR IMAGEN DE LA TABLA ---
-fig, ax = plt.subplots(figsize=(8, 4))
+# --- GUARDAR TABLA COMO IMAGEN PARA PDF ---
+fig, ax = plt.subplots(figsize=(10, 5))
 ax.axis('off')
-tabla = ax.table(cellText=df_tabla.values, colLabels=df_tabla.columns, loc='center', cellLoc='center')
+tabla = ax.table(cellText=df_tabla.values,
+                 colLabels=df_tabla.columns,
+                 loc='center', cellLoc='center')
 tabla.auto_set_font_size(False)
 tabla.set_fontsize(8)
 tabla.scale(1, 1.5)
@@ -180,7 +195,7 @@ img_path = f"/tmp/tabla_factores_{codigo}_{fecha}.png"
 plt.savefig(img_path, bbox_inches='tight')
 plt.close()
 
-# --- GENERAR PDF (INCLUYENDO LA TABLA COMO IMAGEN Y REFERENCIAS) ---
+# --- GENERAR PDF ---
 if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
     pdf = FPDF()
     pdf.add_page()
@@ -198,37 +213,16 @@ if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
 {T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
 
 {T('Prioridad del Donante', 'Donor Priority')}: {prioridad}
-{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}
-""")
+{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}""")
+
     pdf.add_page()
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(200, 10, T("Factores Inmunogenéticos Relevantes", "Relevant Immunogenetic Factors"), ln=True, align='C')
     pdf.image(img_path, x=10, w=190)
     pdf.ln(5)
     pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(0, 8, T("Nota: Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica actual.", "Note: This table summarizes the immunogenetic impact of HLA mismatches based on current scientific literature."))
-    pdf.ln(3)
-    pdf.set_font("Arial", 'I', 10)
-    pdf.multi_cell(0, 8, T("Interpretación sugerida: Los factores ubicados en los primeros lugares del ranking deben recibir mayor peso en la decisión clínica de selección de donantes. La incompatibilidad en DRB1 y B representa un riesgo inmunogenético crítico, mientras que otros como DQB1 o el líder HLA-B pueden ser tolerables en contextos clínicos adecuados.",
-        "Suggested interpretation: Higher-ranked factors should be given more weight in clinical donor selection. DRB1 and B mismatches represent critical immunogenetic risks, while others like DQB1 or HLA-B leader mismatches may be tolerable depending on clinical context."))
-    pdf.ln(5)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, T("Referencias (formato APA)", "References (APA format)"), ln=True)
-    pdf.set_font("Arial", '', 10)
-    referencias = [
-        "Lee SJ, et al. (2007). Blood, 110(13), 4576–4583.",
-        "Morishima Y, et al. (2015). Blood, 125(7), 1189–1197.",
-        "Fleischhauer K, et al. (2012). Blood, 119(9), 2196–2203.",
-        "Petersdorf EW, et al. (2001). Blood, 98(10), 2922–2929.",
-        "Kawase T, et al. (2007). Blood, 110(13), 4576–4583.",
-        "Pidala J, et al. (2020). J Clin Oncol, 38(14), 1390–1398.",
-        "Madbouly AS, et al. (2016). Blood, 127(22), 2498–2506.",
-        "Ruggeri L, et al. (2002). Science, 295(5562), 2097–2100.",
-        "Petersdorf EW, et al. (2001). N Engl J Med, 344(9), 620–628.",
-        "Dehn J, et al. (2014). Biol Blood Marrow Transplant, 20, S1–S136."
-    ]
-    for ref in referencias:
-        pdf.multi_cell(0, 8, f"- {ref}")
+    pdf.multi_cell(0, 8, T("Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica.",
+                          "This table summarizes the immunogenetic impact of HLA mismatches based on scientific literature."))
 
     path = f"/tmp/informe_hla_{codigo}_{fecha}.pdf"
     pdf.output(path)
