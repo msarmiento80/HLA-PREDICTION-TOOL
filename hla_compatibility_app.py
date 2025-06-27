@@ -22,20 +22,17 @@ st.markdown(
     <style>
     .stApp {
         background-color: #f0f8ff;
-        color: #111111;
+        color: #000000 !important;
     }
-    h1 {
-        color: #003366;
-        text-align: center;
-        font-size: 28px;
-    }
-    h4 {
-        text-align: center;
-        color: #003366;
+    h1, h2, h3, h4, h5, h6, p, div, span {
+        color: #000000 !important;
     }
     .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
+    }
+    .stAlert, .st-info, .stWarning, .st-error {
+        color: #000000 !important;
     }
     </style>
     """,
@@ -133,6 +130,9 @@ elif riesgo == "Intermedio":
     recomendacion = T("Evaluar en comité; riesgo intermedio.", "Evaluate in committee; intermediate risk.")
 else:
     recomendacion = T("Proceder si no existen otras contraindicaciones.", "Proceed if no other contraindications exist.")
+
+st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
+st.info(recomendacion)
 
 st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
 st.info(recomendacion)
