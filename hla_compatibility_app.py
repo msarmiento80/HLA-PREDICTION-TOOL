@@ -1,3 +1,7 @@
+
+
+
+
 import streamlit as st
 import pandas as pd
 from fpdf import FPDF
@@ -34,13 +38,18 @@ st.markdown(
     .stAlert, .st-info, .stWarning, .st-error {
         color: #000000 !important;
     }
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
 # --- LOGO EN LA INTERFAZ ---
-st.image("logo_uthc.png", width=200)
+st.markdown('<div class="logo-container"><img src="logo_uthc.png" width="200"></div>', unsafe_allow_html=True)
 
 # --- SELECTOR DE IDIOMA ---
 idioma = st.selectbox("\U0001F310 Idioma / Language", ["Español", "English"])
@@ -80,5 +89,153 @@ hijos_don = st.checkbox(T("Donante con hijos", "Donor has children"))
 
 # --- NIVELES DE ANTI-HLA (DSA) ---
 dsa_valor = st.number_input(T("Nivel de anticuerpos anti-HLA (DSA, MFI)", "Anti-HLA antibodies level (DSA, MFI)"), min_value=0, value=0)
+# --- EVALUACIÓN DE RIESGO ---
+riesgo = "Bajo"
+if dis_drb1 or dis_b or dpb1_no_perm or lider_tt or sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) >= 2:
+    riesgo = "Alto"
+elif sum([dis_a, dis_b, dis_c, dis_drb1, dis_dqb1]) == 1:
+    riesgo = "Intermedio"
+riesgo_gvhd = riesgo
+riesgo_recaida = "Bajo" if riesgo == "Bajo" else ("Intermedio" if edad_don < 40 else "Alto")
+riesgo_prend = "Bajo"
+if dsa_valor > 5000:
+    riesgo_prend = "Alto"
+elif grupo_don != grupo_rec:
+    riesgo_prend = "Intermedio"
+elif grupo_don != grupo_rec and edad_don > 45:
+    riesgo_prend = "Alto"
+riesgo_dsa = "Negativo"
+if dsa_valor > 2000:
+    riesgo_dsa = "Positivo (>2000 MFI)"
 
-# (El resto del código sigue sin cambios...)
+st.subheader(T("Evaluación de Riesgos Adicionales", "Additional Risk Evaluation"))
+st.markdown(f"""
+**{T('Riesgo de GVHD', 'GVHD Risk')}:** {riesgo_gvhd}  
+**{T('Riesgo de recaída', 'Relapse Risk')}:** {riesgo_recaida}  
+**{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}:** {riesgo_prend}  
+**{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}:** {riesgo_dsa}
+""")
+
+# --- PRIORIZACIÓN DEL DONANTE ---
+prioridad = ""
+if dsa_valor > 5000:
+    prioridad = T("Prioridad 3: Donante subóptimo", "Priority 3: Suboptimal donor")
+elif riesgo == "Bajo" and edad_don <= 35 and not lider_tt and grupo_don == grupo_rec and sexo_don == "Masculino":
+    prioridad = T("Prioridad 1: Donante ideal", "Priority 1: Optimal donor")
+elif riesgo == "Intermedio" or edad_don <= 50:
+    prioridad = T("Prioridad 2: Donante aceptable", "Priority 2: Acceptable donor")
+else:
+    prioridad = T("Prioridad 3: Donante subóptimo", "Priority 3: Suboptimal donor")
+
+st.subheader(T("Prioridad del Donante", "Donor Priority"))
+st.markdown(f"**{prioridad}**")
+
+# --- RECOMENDACIÓN CLÍNICA ---
+recomendacion = ""
+if riesgo_prend == "Alto" and dsa_valor > 5000:
+    recomendacion = T("Se recomienda evitar este donante debido al alto riesgo de fallo de prendimiento asociado a anticuerpos anti-HLA elevados (>5000 MFI). Si se considera imprescindible, debe evaluarse desensibilización pre-trasplante.",
+                      "Avoid this donor due to high graft failure risk associated with elevated anti-HLA antibodies (>5000 MFI). If this donor must be used, consider pre-transplant desensitization strategies.")
+elif riesgo == "Alto":
+    recomendacion = T("Buscar alternativas si es posible; alto riesgo por incompatibilidades HLA.", "Seek alternatives if possible; high risk due to HLA incompatibilities.")
+elif riesgo == "Intermedio":
+    recomendacion = T("Evaluar en comité; riesgo intermedio.", "Evaluate in committee; intermediate risk.")
+else:
+    recomendacion = T("Proceder si no existen otras contraindicaciones.", "Proceed if no other contraindications exist.")
+
+st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
+st.info(recomendacion)
+
+# --- TABLA DE FACTORES ---
+data = {
+    "Ranking": ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
+    "Factor": [
+        "HLA-DRB1 mismatch",
+        "HLA-A or HLA-B mismatch",
+        "Non-permissive HLA-DPB1",
+        "HLA-C mismatch",
+        "HLA-DQB1 mismatch",
+        "HLA-B leader (M/T)",
+        "HLA-DQA1 mismatch",
+        "KIR ligand mismatch",
+        "Allelic vs Antigen mismatch",
+        "Mismatch directionality"
+    ],
+    "Impact": [
+        "↑ Acute GVHD, ↓ OS, ↑ TRM",
+        "↑ GVHD, graft failure, ↓ survival",
+        "↑ GVHD, ↑ TRM",
+        "↑ chronic GVHD, moderate TRM",
+        "Limited effect alone; augments DRB1",
+        "↑ relapse if mismatch (M donor)",
+        "Emerging evidence; CD4 repertoire",
+        "↓ relapse, NK alloreactivity (AML)",
+        "Allele mismatch worse than antigen",
+        "GVHD (GVH), graft loss (HVG)"
+    ],
+
+    "N° Pacientes": ["12000", "18000", "5000", "4000", "6000", "7000", "3000", "3500", "10000", "4000"],
+    "Fuerza Evidencia": ["Muy Alta", "Muy Alta", "Alta", "Alta", "Media", "Media", "Baja", "Media", "Alta", "Media"],
+    "Referencia": [
+        "Lee SJ et al. (2007)",
+        "Morishima Y et al. (2015)",
+        "Fleischhauer K et al. (2012)",
+        "Petersdorf EW et al. (2001)",
+        "Kawase T et al. (2007)",
+        "Pidala J et al. (2020)",
+        "Madbouly AS et al. (2016)",
+        "Ruggeri L et al. (2002)",
+        "Petersdorf EW et al. (2001)",
+        "Dehn J et al. (2014)"
+    ]
+}
+df_tabla = pd.DataFrame(data)
+st.dataframe(df_tabla.set_index("Ranking"), use_container_width=True)
+
+# --- GUARDAR TABLA COMO IMAGEN PARA PDF ---
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.axis('off')
+tabla = ax.table(cellText=df_tabla.values,
+                 colLabels=df_tabla.columns,
+                 loc='center', cellLoc='center')
+tabla.auto_set_font_size(False)
+tabla.set_fontsize(8)
+tabla.scale(1, 1.5)
+img_path = f"/tmp/tabla_factores_{codigo}_{fecha}.png"
+plt.savefig(img_path, bbox_inches='tight')
+plt.close()
+
+# --- GENERAR PDF ---
+if st.button(T("📄 Generar PDF", "📄 Generate PDF")):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(200, 10, T("Informe de Evaluación HLA", "HLA Evaluation Report"), ln=True, align='C')
+    pdf.set_font("Arial", '', 12)
+    pdf.ln(10)
+    pdf.multi_cell(0, 10, f"""{T('Código del paciente', 'Patient code')}: {codigo}
+{T('Fecha', 'Date')}: {fecha}
+{T('ID del informe', 'Report ID')}: {id_informe}
+
+{T('Riesgo de GVHD', 'GVHD Risk')}: {riesgo_gvhd}
+{T('Riesgo de recaída', 'Relapse Risk')}: {riesgo_recaida}
+{T('Riesgo de fallo de prendimiento', 'Graft failure risk')}: {riesgo_prend}
+{T('Anticuerpos anti-HLA (DSA)', 'Anti-HLA antibodies (DSA)')}: {riesgo_dsa}
+
+{T('Prioridad del Donante', 'Donor Priority')}: {prioridad}
+{T('Recomendación Clínica', 'Clinical Recommendation')}: {recomendacion}""")
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, T("Factores Inmunogenéticos Relevantes", "Relevant Immunogenetic Factors"), ln=True, align='C')
+    pdf.image(img_path, x=10, w=190)
+    pdf.ln(5)
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(0, 8, T("Esta tabla resume el impacto inmunogenético de las incompatibilidades HLA según la literatura científica.",
+                          "This table summarizes the immunogenetic impact of HLA mismatches based on scientific literature."))
+
+    path = f"/tmp/informe_hla_{codigo}_{fecha}.pdf"
+    pdf.output(path)
+    with open(path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="informe_hla_{codigo}_{fecha}.pdf">📥 {T("Descargar PDF", "Download PDF")}</a>'
+        st.markdown(href, unsafe_allow_html=True)
