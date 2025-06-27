@@ -176,6 +176,18 @@ data = {
         "Moderada",
         "Alta",
         "Moderada"
+    ],
+    "Referencia": [
+        "Lee et al., 2007",
+        "Morishima et al., 2015",
+        "Fleischhauer et al., 2012",
+        "Petersdorf et al., 2001",
+        "Kawase et al., 2007",
+        "Pidala et al., 2020",
+        "Madbouly et al., 2016",
+        "Ruggeri et al., 2002",
+        "Petersdorf et al., 2001",
+        "Dehn et al., 2014"
     ]
 }
 df_tabla = pd.DataFrame(data)
@@ -183,7 +195,7 @@ st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Imm
 st.dataframe(df_tabla, use_container_width=True)
 
 # --- GUARDAR TABLA COMO IMAGEN PARA PDF ---
-fig, ax = plt.subplots(figsize=(10, 5))
+fig, ax = plt.subplots(figsize=(12, 6))
 ax.axis('off')
 tabla = ax.table(cellText=df_tabla.values,
                  colLabels=df_tabla.columns,
