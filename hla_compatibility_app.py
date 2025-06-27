@@ -45,7 +45,14 @@ st.markdown(
 )
 
 # --- LOGO EN LA INTERFAZ ---
-st.markdown('<div class="logo-container"><img src="logo_uthc.png" width="200"></div>', unsafe_allow_html=True)
+logo_path = "logo_uthc.png"
+if os.path.exists(logo_path):
+    logo = Image.open(logo_path)
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.image(logo, width=200)
+    st.markdown("</div>", unsafe_allow_html=True)
+else:
+    st.warning("⚠️ No se encontró el archivo del logo (logo_uthc.png). Verifica que esté en el directorio.")
 
 # --- SELECTOR DE IDIOMA ---
 idioma = st.selectbox("\U0001F310 Idioma / Language", ["Español", "English"])
