@@ -157,6 +157,19 @@ data = {
         "9️⃣",
         "🔟"
     ],
+    "Factor": [
+        "HLA-DRB1 mismatch",
+        "HLA-A or HLA-B mismatch",
+        "Non-permissive HLA-DPB1",
+        "HLA-C mismatch",
+        "HLA-DQB1 mismatch",
+        "HLA-B leader (M/T)",
+        "HLA-DQA1 mismatch",
+        "KIR ligand mismatch",
+        "Allelic vs Antigen mismatch",
+        "Mismatch directionality"
+     ],
+
     "Impacto clínico": [
         "↑ Acute GVHD, ↓ OS, ↑ TRM",
         "↑ GVHD, graft failure, ↓ survival",
