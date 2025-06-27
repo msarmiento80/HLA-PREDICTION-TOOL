@@ -9,6 +9,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+
+
 # --- CONFIGURACIÓN INICIAL ---
 st.set_page_config(
     page_title="HLA Evaluator",
@@ -45,6 +47,10 @@ T = lambda es, en: es if idioma == "Español" else en
 
 # --- TÍTULOS PRINCIPALES ---
 st.title(T("Evaluador de Compatibilidad HLA", "HLA Compatibility Evaluator"))
+
+# Mostrar logo
+st.image("logo_uthc.png", width=200)
+
 st.markdown(f"<h4>{T('Programa de Trasplante Hematopoyético del Adulto - Pontificia Universidad Católica de Chile', 'Adult Hematopoietic Transplant Program - Pontifical Catholic University of Chile')}</h4>", unsafe_allow_html=True)
 
 # --- CÓDIGO DE PACIENTE ---
