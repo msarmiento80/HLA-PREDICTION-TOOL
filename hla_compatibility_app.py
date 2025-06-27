@@ -134,33 +134,34 @@ else:
 st.subheader(T("Recomendación Clínica", "Clinical Recommendation"))
 st.info(recomendacion)
 
-# --- TABLA DE FACTORES INMUNOGENÉTICOS ---
-st.subheader(T("\U0001F4CA Factores Inmunogenéticos Clave", "\U0001F4CA Key Immunogenetic Factors"))
+# --- TABLA DE FACTORES ---
 data = {
-    "Ranking": [
-        "1️⃣",
-        "2️⃣",
-        "3️⃣",
-        "4️⃣",
-        "5️⃣",
-        "6️⃣",
-        "7️⃣",
-        "8️⃣",
-        "9️⃣",
-        "🔟"
+    "Ranking": ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
+    "Factor": [
+        "HLA-DRB1 mismatch",
+        "HLA-A or HLA-B mismatch",
+        "Non-permissive HLA-DPB1",
+        "HLA-C mismatch",
+        "HLA-DQB1 mismatch",
+        "HLA-B leader (M/T)",
+        "HLA-DQA1 mismatch",
+        "KIR ligand mismatch",
+        "Allelic vs Antigen mismatch",
+        "Mismatch directionality"
     ],
-    "Impacto clínico": [
+    "Impact": [
         "↑ Acute GVHD, ↓ OS, ↑ TRM",
         "↑ GVHD, graft failure, ↓ survival",
         "↑ GVHD, ↑ TRM",
         "↑ chronic GVHD, moderate TRM",
         "Limited effect alone; augments DRB1",
-        "↑ relapse if mismatch (T/T donor)",
+        "↑ relapse if mismatch (M donor)",
         "Emerging evidence; CD4 repertoire",
         "↓ relapse, NK alloreactivity (AML)",
         "Allele mismatch worse than antigen",
         "GVHD (GVH), graft loss (HVG)"
     ],
+
     "N° Pacientes": ["12000", "18000", "5000", "4000", "6000", "7000", "3000", "3500", "10000", "4000"],
     "Fuerza Evidencia": ["Muy Alta", "Muy Alta", "Alta", "Alta", "Media", "Media", "Baja", "Media", "Alta", "Media"],
     "Referencia": [
